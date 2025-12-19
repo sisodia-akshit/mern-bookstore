@@ -23,6 +23,9 @@ A full-stack book store application built using the MERN stack.
 
 ## 📸 Screenshots
 
+### Login / Register
+![Auth](./screenshots/login.png)
+
 ### Home Page
 ![Home Page](./screenshots/home.png)
 
@@ -31,9 +34,6 @@ A full-stack book store application built using the MERN stack.
 
 ### Cart
 ![Cart](./screenshots/cart.png)
-
-### Login / Register
-![Auth](./screenshots/login.png)
 
 ### Admin Panel
 ![Admin](./screenshots/admin.png)
