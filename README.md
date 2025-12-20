@@ -8,7 +8,6 @@ https://bookstore-akshit.netlify.app/register
 ## 🚀 Features
 
 👤 User
-
 - User registration & login (JWT authentication)
 - Browse books
 - View book details
@@ -17,7 +16,6 @@ https://bookstore-akshit.netlify.app/register
 - Order history
 
 🛠️ Admin
-
 - Add new books
 - Upload book cover images (Cloudinary)
 - Manage book availability
@@ -25,14 +23,12 @@ https://bookstore-akshit.netlify.app/register
 ## 🛠 Tech Stack
 
 Frontend
-
-React
+- React
 - Context API
 - React Router
 - CSS
 
 Backend
-
 - Node.js
 -Express.js
 -MongoDB (Mongoose)
@@ -40,7 +36,6 @@ Backend
 -Cloudinary (Image upload)
 
 Deployment
-
 - Frontend: Netlify
 - Backend: Render
 - Database: MongoDB Atlas
