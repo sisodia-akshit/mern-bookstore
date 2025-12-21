@@ -18,11 +18,13 @@ app.use(cors());
 app.use(helmet());
 
 let limiter = rateLimit({
-  max: 1000,
-  windowMs: 60 * 60 * 1000,
+  max: 100,
+  windowMs: 15 * 60 * 1000,
   message:
     "We have received too many requests with this IP. Please try after one hour.",
 });
+app.set("trust proxy", 1);
+
 
 app.use("/api", limiter);
 app.use(express.json());
