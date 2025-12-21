@@ -1,25 +1,45 @@
 # 📚 BookStore – MERN Stack Project
 
-A full-stack book store application built using the MERN stack.
+A full-stack MERN Bookstore application with authentication, cart, orders, admin book management, and image upload using Cloudinary.
+
+🔗 Live Demo
+https://bookstore-akshit.netlify.app
+(“Initial load may take a few seconds due to free hosting cold start.”)
 
 ## 🚀 Features
-- User authentication (JWT)
-- Browse & search books
-- Add to cart
+
+👤 User
+- User registration & login (JWT authentication)
+- Browse books
+- View book details
+- Add/remove books from cart
 - Place orders
-- Admin: add books
-- Cloudinary image upload
-- Responsive UI
+- Order history
+
+🛠️ Admin
+- Add new books
+- Upload book cover images (Cloudinary)
+- Manage book availability
 
 ## 🛠 Tech Stack
-- Frontend: React, Context API, CSS
-- Backend: Node.js, Express
-- Database: MongoDB
-- Authentication: JWT
-- Image Storage: Cloudinary
 
-## 🔗 Live Demo
-(Will add after deployment)
+Frontend
+- React
+- Context API
+- React Router
+- CSS
+
+Backend
+- Node.js
+-Express.js
+-MongoDB (Mongoose)
+-JWT Authentication
+-Cloudinary (Image upload)
+
+Deployment
+- Frontend: Netlify
+- Backend: Render
+- Database: MongoDB Atlas
 
 ## 📸 Screenshots
 
