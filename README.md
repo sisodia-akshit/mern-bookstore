@@ -4,6 +4,7 @@ A full-stack MERN Bookstore application with authentication, cart, orders, admin
 
 🔗 Live Demo
 https://bookstore-akshit.netlify.app/register
+(“Initial load may take a few seconds due to free hosting cold start.”)
 
 ## 🚀 Features
 
