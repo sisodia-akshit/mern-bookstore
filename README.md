@@ -3,7 +3,7 @@
 A full-stack MERN Bookstore application with authentication, cart, orders, admin book management, and image upload using Cloudinary.
 
 🔗 Live Demo
-https://bookstore-akshit.netlify.app/register
+https://bookstore-akshit.netlify.app
 (“Initial load may take a few seconds due to free hosting cold start.”)
 
 ## 🚀 Features
