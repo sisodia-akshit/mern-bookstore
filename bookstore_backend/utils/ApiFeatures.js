@@ -49,7 +49,7 @@ class   ApiFeatures {
 
   paginate() {
     const pageQuery = this.queryStr.page ? Number(this.queryStr.page) : 1;
-    const limitQuery = this.queryStr.limit ? Number(this.queryStr.limit) : 50;
+    const limitQuery = this.queryStr.limit ? Number(this.queryStr.limit) : 10;
     const skip = (pageQuery - 1) * limitQuery;
     this.query = this.query.skip(skip).limit(limitQuery);
 

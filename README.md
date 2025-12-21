@@ -24,19 +24,19 @@ A full-stack book store application built using the MERN stack.
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](screenshots/home.png)
+![Home Page](./screenshots/home.png)
 
 ### Book Details
-![Book Details](screenshots/book.png)
+![Book Details](./screenshots/book.png)
 
 ### Cart
-![Cart](screenshots/cart.png)
+![Cart](./screenshots/cart.png)
 
 ### Login / Register
-![Auth](screenshots/login.png)
+![Auth](./screenshots/login.png)
 
 ### Admin Panel
-![Admin](screenshots/admin.png)
+![Admin](./screenshots/admin.png)
 
 ## Setup
 ```bash

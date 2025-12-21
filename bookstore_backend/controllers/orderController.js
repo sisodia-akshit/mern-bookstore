@@ -1,9 +1,10 @@
 const Order = require("../models/Order");
 const Book = require("../models/Book");
 
+const asyncErrorHandler = require("../utils/asyncErrorHandler");
+
 // PLACE ORDER
-exports.placeOrder = async (req, res) => {
-  try {
+exports.placeOrder = asyncErrorHandler(async (req, res) => {
     const { items } = req.body;
 
     console.log(items);
@@ -35,32 +36,22 @@ exports.placeOrder = async (req, res) => {
     });
 
     res.status(201).json(order);
-  } catch (err) {
-    res.status(500).json({ message: "Order failed" });
-  }
-};
+
+});
 
 // USER ORDERS
-exports.getMyOrders = async (req, res) => {
-  try {
+exports.getMyOrders = asyncErrorHandler(async (req, res) => {
     const orders = await Order.find({ user: req.user._id }).populate(
       "items._id",
       "title price"
     );
     res.json(orders);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch orders" });
-  }
-};
+});
 
 // ADMIN: ALL ORDERS
-exports.getAllOrders = async (req, res) => {
-  try {
+exports.getAllOrders = asyncErrorHandler(async (req, res) => {
     const orders = await Order.find()
       .populate("user", "name email")
       .populate("items.book", "title price");
     res.json(orders);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch orders" });
-  }
-};
+});
