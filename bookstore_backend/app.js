@@ -19,7 +19,11 @@ const cookieParser = require("cookie-parser");
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // frontend URL
+    origin: [
+      "https://admin-dashboard-by-akshit.netlify.app",
+      "https://bookstore-akshit.netlify.app",
+    ],
+    // origin: ["http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   })
 );
@@ -27,14 +31,14 @@ app.use(
 app.use(helmet());
 
 let limiter = rateLimit({
-  max: 100,
+  max: 200,
   windowMs: 15 * 60 * 1000,
   message:
     "We have received too many requests with this IP. Please try after one hour.",
 });
 app.set("trust proxy", 1);
 
-// app.use("/api", limiter);
+app.use("/api", limiter);
 app.use(express.json());
 app.use(cookieParser());
 
