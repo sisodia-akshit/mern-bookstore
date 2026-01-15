@@ -1,8 +1,9 @@
 // routes/cloudinary.js
 const router = require("express").Router();
 const cloudinary = require("../config/cloudinary");
+const { protect } = require("../middleware/authMiddleware");
 
-router.get("/signature", (req, res) => {
+router.get("/signature", protect, (req, res) => {
   const timestamp = Math.round(new Date().getTime() / 1000);
 
   const signature = cloudinary.utils.api_sign_request(

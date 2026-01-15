@@ -6,7 +6,8 @@ const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
 // REGISTER
 exports.register = asyncErrorHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
+  let user;
 
   if (!name || !email || !password) {
     return res.status(400).json({ message: "All fields required" });
@@ -14,16 +15,25 @@ exports.register = asyncErrorHandler(async (req, res) => {
 
   const userExists = await User.findOne({ email });
   if (userExists) {
-    return res.status(400).json({ message: "User already exists" });
+    return res.status(400).json({ message: "Email already exists" });
   }
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
+  if (role === "seller") {
+    user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: role,
+    });
+  } else {
+    user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+  }
 
   res.status(201).json({ message: "User registered successfully" });
 });
@@ -52,8 +62,14 @@ exports.login = asyncErrorHandler(async (req, res) => {
     { expiresIn: "7d" }
   );
 
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax", // or "strict"
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
   res.json({
-    token,
     user: {
       id: user._id,
       name: user.name,
@@ -62,3 +78,18 @@ exports.login = asyncErrorHandler(async (req, res) => {
     },
   });
 });
+
+exports.getMe = asyncErrorHandler(async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+
+  res.json({ user });
+});
+
+exports.logout = (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  res.json({ message: "Logged out" });
+};

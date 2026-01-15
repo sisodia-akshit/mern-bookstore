@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema(
       minlength: [1, "Author name must have at least 1 character."],
       maxlength: [25, "Author name must not have more than 25 characters."],
     },
-    bookOwner: {
-      type: String,
-      required: [true, "bookOwner is a required field!"],
-    },
     genres: {
       type: [String],
       required: [true, "Genres is required field!"],

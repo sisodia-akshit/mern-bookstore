@@ -4,16 +4,25 @@ const cors = require("cors");
 
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet"); //more security
-const hpp = require("hpp");        //prevent parameter 
+const hpp = require("hpp"); //prevent parameter
 const morgan = require("morgan");
 
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const cloudinaryRoutes = require("./routes/cloudinary");
+const cookieParser = require("cookie-parser");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"], // frontend URL
+    credentials: true,
+  })
+);
 
 app.use(helmet());
 
@@ -25,9 +34,9 @@ let limiter = rateLimit({
 });
 app.set("trust proxy", 1);
 
-
-app.use("/api", limiter);
+// app.use("/api", limiter);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   hpp({
@@ -47,8 +56,11 @@ app.use(
 
 // simple health route
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 
 module.exports = app;
