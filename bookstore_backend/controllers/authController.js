@@ -100,6 +100,8 @@ exports.getMe = asyncErrorHandler(async (req, res) => {
 exports.logout = asyncErrorHandler(async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0),
   });
 
