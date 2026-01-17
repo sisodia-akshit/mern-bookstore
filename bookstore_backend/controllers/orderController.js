@@ -8,7 +8,6 @@ const ApiFeatures = require("../utils/ApiFeatures");
 exports.placeOrder = asyncErrorHandler(async (req, res) => {
   const { items } = req.body;
 
-  console.log(items);
   if (!items || items.length === 0) {
     return res.status(400).json({ message: "No items in order" });
   }
@@ -71,5 +70,79 @@ exports.getAllOrders = asyncErrorHandler(async (req, res) => {
     status: "success",
     total: totalOrders,
     data: await features.query,
+  });
+});
+
+// seller ORDERS
+exports.getSellersOrders = asyncErrorHandler(async (req, res) => {
+  const sellerId = req.user._id.toString();
+
+  const data = await Order.aggregate([
+    // Break items array into individual documents
+    { $unwind: "$items" },
+
+    // Join book info
+    {
+      $lookup: {
+        from: "books",
+        localField: "items._id",
+        foreignField: "_id",
+        as: "book",
+      },
+    },
+    { $unwind: "$book" },
+
+    // Only books created by this seller
+    {
+      $match: {
+        "book.createdBy": sellerId,
+      },
+    },
+
+    //Join user (who ordered)
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "orderedBy",
+      },
+    },
+    { $unwind: "$orderedBy" },
+    {
+      $group: {
+        _id: "$_id",
+        status: { $first: "$status" },
+        createdAt: { $first: "$createdAt" },
+
+        user: {
+          $first: {
+            _id: "$orderedBy._id",
+            name: "$orderedBy.name",
+            email: "$orderedBy.email",
+          },
+        },
+
+        items: {
+          $push: {
+            _id: "$book._id",
+            title: "$book.title",
+            price: "$items.price",
+            quantity: "$items.quantity",
+          },
+        },
+        totalAmount: {
+          $sum: {
+            $multiply: ["$items.price", "$items.quantity"],
+          },
+        },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    total: data.length,
+    data,
   });
 });

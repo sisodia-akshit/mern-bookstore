@@ -12,9 +12,12 @@ const userRoutes = require("./routes/userRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const adminRoutes = require("./routes/adminRoutes");
 const cloudinaryRoutes = require("./routes/cloudinary");
 const cookieParser = require("cookie-parser");
+
+//google 
+const passport = require("passport");
+require("./config/passport");
 
 const app = express();
 app.use(
@@ -25,7 +28,7 @@ app.use(
     ],
     // origin: ["http://localhost:5173", "http://localhost:3000"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(helmet());
@@ -54,9 +57,11 @@ app.use(
       "author",
       "bookOwner",
     ],
-  })
+  }),
 );
 // app.use(morgan("dev"));
+
+app.use(passport.initialize());
 
 // simple health route
 app.use("/api/auth", authRoutes);
@@ -64,7 +69,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 
 module.exports = app;

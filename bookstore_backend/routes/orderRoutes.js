@@ -5,6 +5,7 @@ const {
   placeOrder,
   getMyOrders,
   getAllOrders,
+  getSellersOrders,
 } = require("../controllers/orderController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -14,6 +15,8 @@ router.post("/", protect, placeOrder);
 router.get("/my", protect, getMyOrders);
 
 // admin
-router.get("/", protect, adminOnly, getAllOrders);
+router.get("/all", protect, adminOnly, getAllOrders);
+// seller
+router.get("/", protect, getSellersOrders);
 
 module.exports = router;

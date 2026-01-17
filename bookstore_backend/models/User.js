@@ -15,15 +15,26 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "local";
+      },
+      select: false,
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
     role: {
       type: String,
-      enum: ["user", "seller", "admin"],
+      enum: ["admin", "seller", "operator", "user"],
       default: "user",
     },
+    photo:{
+      type:String,
+    }
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);
