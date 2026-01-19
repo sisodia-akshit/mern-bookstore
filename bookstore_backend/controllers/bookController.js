@@ -35,14 +35,16 @@ exports.createBook = asyncErrorHandler(async (req, res) => {
     pages,
     ratings,
     coverImage,
-    createdBy
+    createdBy,
   });
   sendResponce(res, 201, book);
 });
 
 // READ all (public)
 exports.getBooks = asyncErrorHandler(async (req, res) => {
-  const totalBooks = await Book.countDocuments(req.query.createdBy?{createdBy:req.query.createdBy}:{});
+  const totalBooks = await Book.countDocuments(
+    req.query.createdBy ? { createdBy: req.query.createdBy } : {},
+  );
   const features = new ApiFeatures(Book.find(), req.query)
     .filter()
     .sort()
@@ -53,7 +55,27 @@ exports.getBooks = asyncErrorHandler(async (req, res) => {
   res.status(200).json({
     status: "success",
     totalBooks,
-    data:await features.query,
+    data: await features.query,
+  });
+});
+
+// READ my books (public)
+exports.getMyBooks = asyncErrorHandler(async (req, res) => {
+  const totalBooks = await Book.countDocuments({ createdBy: req.user._id });
+  const features = new ApiFeatures(
+    Book.find({ createdBy: req.user._id }),
+    req.query,
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  // sendResponce(res, 200, await features.query);
+  res.status(200).json({
+    status: "success",
+    totalBooks,
+    data: await features.query,
   });
 });
 
@@ -69,6 +91,18 @@ exports.updateBook = asyncErrorHandler(async (req, res) => {
   const book = await Book.findByIdAndUpdate(req.params._id, req.body, {
     new: true,
   });
+  sendResponce(res, 200, book);
+});
+
+// UPDATE (my)
+exports.updateMyBook = asyncErrorHandler(async (req, res) => {
+  const book = await Book.findOneAndUpdate(
+    { createdBy: req.user._id, _id: req.params._id },
+    req.body,
+    {
+      new: true,
+    },
+  );
   sendResponce(res, 200, book);
 });
 

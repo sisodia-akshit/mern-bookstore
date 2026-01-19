@@ -4,7 +4,7 @@ const ApiFeatures = require("../utils/ApiFeatures");
 
 exports.getUsers = asyncErrorHandler(async (req, res) => {
   const totalUsers = await User.countDocuments(
-    req.query.email ? { email: { $regex: req.query.email } } : {}
+    req.query.email ? { email: { $regex: req.query.email } } : {},
   );
   const features = new ApiFeatures(User.find(), req.query)
     .filter()
@@ -17,5 +17,30 @@ exports.getUsers = asyncErrorHandler(async (req, res) => {
     status: "success",
     total: totalUsers,
     data: await features.query,
+  });
+});
+
+exports.setUserRole = asyncErrorHandler(async (req, res) => {
+  const { role } = req.body;
+  if (!role) {
+    return res.status(400).json({ message: "All fields required" });
+  }
+
+  if (role === "admin") {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  const userId = req.params.id;
+
+  await User.findByIdAndUpdate(
+    userId,
+    { role },
+    {
+      new: true,
+    },
+  );
+  res.status(200).json({
+    status: "success",
+    message:"Role changed successfully"
   });
 });

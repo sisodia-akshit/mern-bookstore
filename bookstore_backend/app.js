@@ -13,20 +13,23 @@ const bookRoutes = require("./routes/bookRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const cloudinaryRoutes = require("./routes/cloudinary");
+const contactRoutes = require("./routes/contactRoutes");
 const cookieParser = require("cookie-parser");
 
-//google 
+//google
 const passport = require("passport");
 require("./config/passport");
 
 const app = express();
 app.use(
   cors({
-    origin: [
-      "https://admin-dashboard-by-akshit.netlify.app",
-      "https://bookstore-akshit.netlify.app",
-    ],
-    // origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin:
+      process.env.NODE_ENV === "production"
+        ? [
+            "https://admin-dashboard-by-akshit.netlify.app",
+            "https://bookstore-akshit.netlify.app",
+          ]
+        : ["http://localhost:5173", "http://localhost:3000"],
     credentials: true,
   }),
 );
@@ -70,5 +73,6 @@ app.use("/api/books", bookRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
+app.use("/api/contact", contactRoutes);
 
 module.exports = app;

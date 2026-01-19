@@ -23,22 +23,12 @@ exports.register = asyncErrorHandler(async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  let user;
+  await User.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
 
-  if (role === "seller") {
-    user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role: role,
-    });
-  } else {
-    user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
-  }
   await OTP.deleteOne({ email });
 
   res.status(201).json({
@@ -127,7 +117,7 @@ exports.generateOtp = asyncErrorHandler(async (req, res) => {
   };
 
   // create OTP
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  const otp = Math.floor(1000 + Math.random() * 9000);
 
   await OTP.create({
     email,
@@ -153,7 +143,7 @@ exports.generateOtp = asyncErrorHandler(async (req, res) => {
   try {
     await sendEmail({
       email,
-      subject: "Your OTP Varification Code",
+      subject: "Email Varification Code",
       html,
     });
 

@@ -27,11 +27,15 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "seller", "operator", "user"],
+      enum: ["admin", "operator", "user"],
       default: "user",
     },
     photo:{
       type:String,
+    },
+    isActive:{
+      type:Boolean,
+      default:true
     }
   },
   { timestamps: true },
