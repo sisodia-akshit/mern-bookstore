@@ -32,19 +32,22 @@ router.post(
                 `;
 
     try {
+      console.log("working")
       await sendEmail({
         email: "aakshit906@gmail.com",
         subject: "BookStore User Message",
         html,
       });
+      console.log("working 2")
+
+
+      res.json({
+        status: "success",
+        message: "Mail sent successfully",
+      });
     } catch (error) {
       return new Error(error);
     }
-
-    res.json({
-      status: "success",
-      message: "Mail sent successfully",
-    });
   }),
 );
 

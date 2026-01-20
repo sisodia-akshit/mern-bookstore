@@ -174,3 +174,42 @@ exports.verifyOtp = asyncErrorHandler(async (req, res) => {
     message: "You have Verified successfully.",
   });
 });
+
+exports.getGoogle = (req, res, next) => {
+  const redirect = req.query.redirect;
+
+  // store redirect temporarily (cookie is safest)
+  res.cookie("auth_redirect", redirect, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 5 * 60 * 1000, // 5 minutes
+  });
+
+  next();
+};
+
+exports.getGoogleCallback = (req, res) => {
+  const token = jwt.sign(
+    { id: req.user._id, role: req.user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+  });
+
+  const redirect = req.cookies.auth_redirect;
+
+  res.clearCookie("auth_redirect");
+
+  if (redirect === "admin") {
+    return res.redirect(process.env.ADMIN_URL);
+  }
+
+  return res.redirect(process.env.STORE_URL);
+};
