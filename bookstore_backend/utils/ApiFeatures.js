@@ -20,15 +20,9 @@ class ApiFeatures {
     if (this.queryStr.language) {
       filter.language = this.queryStr.language;
     }
-    // if (this.queryStr.status) {
-    //   filter.status = this.queryStr.status;
-    // }
     if (this.queryStr.createdBy) {
       filter.createdBy = this.queryStr.createdBy;
     }
-    // if (this.queryStr.email) {
-    //   filter.email = { $regex: this.queryStr.email };
-    // }
 
     this.filterQuery = filter;
 
@@ -42,7 +36,7 @@ class ApiFeatures {
       const sortBy = this.queryStr.sort.split(",").join(" ");
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort("createdAt");
+      this.query = this.query.sort("-createdAt");
     }
     return this;
   }
