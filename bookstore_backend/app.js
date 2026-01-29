@@ -14,6 +14,9 @@ const orderRoutes = require("./routes/orderRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const cloudinaryRoutes = require("./routes/cloudinary");
 const contactRoutes = require("./routes/contactRoutes");
+
+const errorHandler = require("./middleware/errorMiddleware");
+
 const cookieParser = require("cookie-parser");
 
 //google
@@ -21,31 +24,28 @@ const passport = require("passport");
 require("./config/passport");
 
 const app = express();
+
+const corsOptions = require("./config/cors");
+app.use(cors(corsOptions));
+
 app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [
-            "https://admin-dashboard-by-akshit.netlify.app",
-            "https://bookstore-akshit.netlify.app",
-          ]
-        : ["http://localhost:5173", "http://localhost:3000"],
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: false,
   }),
 );
 
-app.use(helmet());
-
-let limiter = rateLimit({
-  max: 200,
-  windowMs: 15 * 60 * 1000,
-  message:
-    "We have received too many requests with this IP. Please try after one hour.",
-});
 app.set("trust proxy", 1);
 
-app.use("/api", limiter);
-app.use(express.json());
+let limiter = rateLimit({
+  max: 100,
+  windowMs: 15 * 60 * 1000,
+  message: "Too many requests. Please try again after 15 minutes.",
+});
+// app.use("/api", limiter);
+app.use("/api/auth", limiter);
+app.use("/api/orders", limiter);
+
+app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
 app.use(
@@ -56,17 +56,18 @@ app.use(
       "price",
       "pages",
       "language",
-      "publisher",
       "author",
-      "bookOwner",
     ],
   }),
 );
-// app.use(morgan("dev"));
+
+if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 app.use(passport.initialize());
 
 // simple health route
+app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
@@ -74,5 +75,14 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 app.use("/api/contact", contactRoutes);
+
+app.all("/{*any}", (req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+  });
+});
+
+app.use(errorHandler);
 
 module.exports = app;

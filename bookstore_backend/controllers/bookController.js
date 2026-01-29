@@ -1,6 +1,9 @@
+const mongoose = require("mongoose");
 const Book = require("../models/Book");
 const ApiFeatures = require("../utils/ApiFeatures");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
+const CustomError = require("../utils/CustomError");
+const Order = require("../models/Order");
 
 const sendResponce = (res, code, data) => {
   res.status(code).json({
@@ -9,105 +12,297 @@ const sendResponce = (res, code, data) => {
   });
 };
 
-// CREATE (admin)
+// CREATE
 exports.createBook = asyncErrorHandler(async (req, res) => {
   const {
     title,
     author,
-    genres,
     price,
-    description,
-    isAvailable,
+    stock,
     pages,
-    ratings,
+    description,
+    category,
+    genres,
     coverImage,
   } = req.body;
-
-  const createdBy = req.user._id;
 
   const book = await Book.create({
     title,
     author,
-    genres,
     price,
-    description,
-    isAvailable,
+    stock,
     pages,
-    ratings,
+    description,
+    category,
+    genres,
     coverImage,
-    createdBy,
+    createdBy: req.user._id,
   });
   sendResponce(res, 201, book);
 });
 
 // READ all (public)
 exports.getBooks = asyncErrorHandler(async (req, res) => {
-  const totalBooks = await Book.countDocuments(
-    req.query.createdBy ? { createdBy: req.query.createdBy } : {},
-  );
-  const features = new ApiFeatures(Book.find(), req.query)
+  const baseQuery = Book.find();
+  const features = new ApiFeatures(baseQuery, req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  // sendResponce(res, 200, await features.query);
+  const totalBooks = await Book.countDocuments(features.filterQuery);
+
+  const data = await features.query;
+
   res.status(200).json({
     status: "success",
     totalBooks,
-    data: await features.query,
+    data,
   });
 });
 
 // READ my books (public)
 exports.getMyBooks = asyncErrorHandler(async (req, res) => {
-  const totalBooks = await Book.countDocuments({ createdBy: req.user._id });
-  const features = new ApiFeatures(
-    Book.find({ createdBy: req.user._id }),
-    req.query,
-  )
+  const baseQuery = Book.find({ createdBy: req.user.id });
+  const features = new ApiFeatures(baseQuery, req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  // sendResponce(res, 200, await features.query);
+  let filters = features.filterQuery;
+  filters.createdBy = req.user.id;
+  const totalBooks = await Book.countDocuments(filters);
+
+  const data = await features.query;
+
   res.status(200).json({
     status: "success",
     totalBooks,
-    data: await features.query,
+    data,
   });
 });
 
 // READ one (public)
-exports.getBookById = asyncErrorHandler(async (req, res) => {
-  const book = await Book.findById(req.params._id);
-  if (!book) return res.status(404).json({ message: "Book not found" });
-  sendResponce(res, 200, book);
-});
+exports.getBookById = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
 
-// UPDATE (admin)
-exports.updateBook = asyncErrorHandler(async (req, res) => {
-  const book = await Book.findByIdAndUpdate(req.params._id, req.body, {
-    new: true,
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const book = await Book.findById(id).populate(
+    "reviews.user",
+    "name email photo",
+  );
+
+  if (!book) {
+    return next(new CustomError("Book not found!", 404));
+  }
+
+  let hasPurchased = false;
+  if (req.user) {
+    hasPurchased = !!(await Order.exists({
+      user: req.user._id,
+      "items.book": id,
+      status: "paid",
+    }));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: book,
+    hasPurchased,
   });
-  sendResponce(res, 200, book);
 });
 
 // UPDATE (my)
-exports.updateMyBook = asyncErrorHandler(async (req, res) => {
+exports.updateBook = asyncErrorHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const updateData = {};
+  const allowedFields = [
+    "title",
+    "author",
+    "genres",
+    "price",
+    "category",
+    "description",
+    "stock",
+    "pages",
+  ];
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      updateData[field] = req.body[field];
+    }
+  });
+
   const book = await Book.findOneAndUpdate(
-    { createdBy: req.user._id, _id: req.params._id },
-    req.body,
+    { _id: id, createdBy: req.user._id },
+    updateData,
     {
       new: true,
+      runValidators: true,
     },
   );
+
+  if (!book) {
+    throw new CustomError("Book not found!", 404);
+  }
+
+  sendResponce(res, 200, book);
+});
+
+//review update
+exports.addReview = asyncErrorHandler(async (req, res) => {
+  const { rating, title, comment } = req.body;
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const book = await Book.findById(id);
+  if (!book) {
+    throw new CustomError("Book not found", 404);
+  }
+
+  const alreadyReviewed = book.reviews.find(
+    (r) => r.user.toString() === req.user._id.toString(),
+  );
+
+  if (alreadyReviewed) {
+    throw new CustomError("Can't review twice!!", 400);
+  }
+
+  book.reviews.push({
+    user: req.user._id,
+    rating,
+    title,
+    comment,
+  });
+
+  book.ratings =
+    (book.ratings * book.ratingsCount + rating) / (book.ratingsCount + 1);
+
+  book.ratingsCount += 1;
+
+  await book.save();
+
+  res.status(201).json({
+    status: "success",
+    message: "Review added",
+  });
+});
+
+// DELETE
+exports.deleteBook = asyncErrorHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const book = await Book.findOneAndUpdate(
+    { _id: id, createdBy: req.user._id },
+    { isDeleted: true },
+    { new: true },
+  );
+
+  if (!book) {
+    throw new CustomError("Book not found", 404);
+  }
+  res.status(204).end();
+});
+
+exports.getBookByCategory = asyncErrorHandler(async (req, res, next) => {
+  const category = req.params.category;
+  const books = await Book.aggregate([
+    // { $unwind: "$category" },
+    { $match: { category } },
+    { $sort: { createdAt: -1 } }, // or price / rating
+    { $limit: 12 },
+    {
+      $addFields: {
+        isAvailable: { $gt: ["$stock", 0] },
+      },
+    },
+    {
+      $group: {
+        _id: "$category",
+        bookCount: { $sum: 1 },
+        books: { $push: "$$ROOT" },
+      },
+    },
+    { $addFields: { category: "$_id" } },
+    { $project: { _id: 0 } },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: books[0].books,
+    totalBooks: books[0].bookCount,
+  });
+});
+
+// // admin //
+
+// UPDATE (admin)
+exports.adminUpdateBook = asyncErrorHandler(async (req, res) => {
+  const updateData = {};
+  const allowedFields = [
+    "title",
+    "author",
+    "price",
+    "stock",
+    "description",
+    "category",
+    "genres",
+    "pages",
+  ];
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      updateData[field] = req.body[field];
+    }
+  });
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const book = await Book.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+  if (!book) {
+    throw new CustomError("Book not found!", 404);
+  }
   sendResponce(res, 200, book);
 });
 
 // DELETE (admin)
-exports.deleteBook = asyncErrorHandler(async (req, res) => {
-  await Book.findByIdAndDelete(req.params._id);
-  sendResponce(res, 204, null);
+exports.adminDeleteBook = asyncErrorHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new CustomError("Invalid book ID", 400);
+  }
+
+  const book = await Book.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
+
+  if (!book) {
+    throw new CustomError("Book not found", 404);
+  }
+  res.status(204).end();
 });

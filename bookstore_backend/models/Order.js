@@ -9,13 +9,18 @@ const orderSchema = new mongoose.Schema(
     },
     items: [
       {
-        _id: {
+        book: {
           type: mongoose.Schema.Types.ObjectId,
+          ref: "Book",
           required: true,
         },
-        title:{
-          type:String,
-          required:true
+        seller: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        title: {
+          type: String,
+          required: true,
         },
         quantity: {
           type: Number,
@@ -26,9 +31,9 @@ const orderSchema = new mongoose.Schema(
           required: true,
         },
         coverImage: {
-          type:String,
-          required:true
-        }
+          type: String,
+          required: true,
+        },
       },
     ],
     totalAmount: {
@@ -41,7 +46,16 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
+// Orders by user (My Orders page)
+orderSchema.index({ user: 1, createdAt: -1 });
+
+// Seller orders (unwind items)
+orderSchema.index({ "items.book": 1 });
+
+// Order status filtering
+orderSchema.index({ status: 1 });
 
 module.exports = mongoose.model("Order", orderSchema);

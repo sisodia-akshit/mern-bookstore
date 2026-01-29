@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      autoIndex: true, // false in huge prod systems
+    });
   } catch (err) {
     console.error("Initial MongoDB connection error:", err);
     process.exit(1);

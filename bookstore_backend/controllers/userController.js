@@ -12,7 +12,6 @@ exports.getUsers = asyncErrorHandler(async (req, res) => {
     .limitFields()
     .paginate();
 
-  // sendResponce(res, 200, await features.query);
   res.status(200).json({
     status: "success",
     total: totalUsers,
@@ -41,6 +40,12 @@ exports.setUserRole = asyncErrorHandler(async (req, res) => {
   );
   res.status(200).json({
     status: "success",
-    message:"Role changed successfully"
+    message: "Role changed successfully",
   });
+});
+
+exports.getMe = asyncErrorHandler(async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+
+  res.json({ user });
 });

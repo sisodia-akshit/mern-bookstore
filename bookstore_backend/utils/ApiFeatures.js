@@ -1,4 +1,4 @@
-class   ApiFeatures {
+class ApiFeatures {
   constructor(query, queryStr) {
     this.query = query;
     this.queryStr = queryStr;
@@ -6,14 +6,13 @@ class   ApiFeatures {
 
   filter() {
     const filter = {};
+
+    if (this.queryStr.search) {
+      filter.$text = { $search: this.queryStr.search };
+    }
+
     if (this.queryStr.price) {
       filter.price = { $lte: this.queryStr.price };
-    }
-    if (this.queryStr.pages) {
-      filter.pages = { $gte: this.queryStr.pages };
-    }
-    if (this.queryStr.title) {
-      filter.title = { $regex: this.queryStr.title };
     }
     if (this.queryStr.ratings) {
       filter.ratings = { $gte: this.queryStr.ratings };
@@ -21,18 +20,17 @@ class   ApiFeatures {
     if (this.queryStr.language) {
       filter.language = this.queryStr.language;
     }
-    if (this.queryStr.status) {
-      filter.status = this.queryStr.status;
-    }
+    // if (this.queryStr.status) {
+    //   filter.status = this.queryStr.status;
+    // }
     if (this.queryStr.createdBy) {
       filter.createdBy = this.queryStr.createdBy;
     }
-    if (this.queryStr.email) {
-      filter.email = { $regex: this.queryStr.email };
-    }
-    if (this.queryStr.name) {
-      filter.name = { $regex: this.queryStr.name };
-    }
+    // if (this.queryStr.email) {
+    //   filter.email = { $regex: this.queryStr.email };
+    // }
+
+    this.filterQuery = filter;
 
     this.query = this.query.find(filter);
 

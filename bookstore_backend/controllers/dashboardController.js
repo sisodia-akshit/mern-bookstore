@@ -72,7 +72,8 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
   ]);
 
   const orders = {
-    pending: 0,
+    pending:0,
+    placed: 0,
     delivered: 0,
     cancelled: 0,
     shipped: 0,
@@ -107,7 +108,8 @@ exports.getAdminDashboardStats = asyncErrorHandler(async (req, res) => {
     ]);
 
   const orders = {
-    pending: 0,
+    pending:0,
+    placed: 0,
     delivered: 0,
     cancelled: 0,
     shipped: 0,

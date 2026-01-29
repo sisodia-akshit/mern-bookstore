@@ -1,17 +1,32 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
-const otpSchema = new mongoose.Schema({
-  email: {
-    type: String,
+const otpSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+    },
+    otp: {
+      type: String,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
+    attempts: {
+      type: Number,
+      default: 0,
+    },
   },
-  otp: {
-    type: Number,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    expires: 300, // auto delete after 5 minutes
-  },
-});
+  { timestamps: true },
+);
+
+otpSchema.methods.isOtpValid = async function (otp) {
+  const hashedInputOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+  return hashedInputOtp === this.otp;
+};
+
+otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model("OTP", otpSchema);

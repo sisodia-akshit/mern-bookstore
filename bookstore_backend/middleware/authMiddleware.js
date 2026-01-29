@@ -16,7 +16,22 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({ message: "User not found" });
   }
   next();
+};
 
+exports.isLogged = async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return next();
+  }
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  req.user = await User.findById(decoded.id).select("-password");
+
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+  next();
 };
 
 // check if user is admin
