@@ -1,5 +1,8 @@
 require("dotenv").config();
+const http = require("http");
+const { Server } = require("socket.io");
 const connectDB = require("./config/db");
+const { initSocket } = require("./config/socket.js");
 
 process.on("uncaughtException", (err) => {
   console.error("UNCAUGHT EXCEPTION! Shutting down...");
@@ -12,13 +15,27 @@ const app = require("./app.js");
 const PORT = process.env.PORT || 5000;
 
 let server;
+let io;
+
+module.exports.getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io not initialized");
+  }
+  return io;
+};
 
 const startServer = async () => {
   try {
     await connectDB();
-    server = app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT}`),
-    );
+    // 🔥 Create HTTP server
+    server = http.createServer(app);
+
+    // 🔥 initialize socket ONCE
+    initSocket(server);
+
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);

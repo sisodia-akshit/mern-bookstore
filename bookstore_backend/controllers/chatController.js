@@ -1,8 +1,9 @@
+const { getIO } = require("../config/socket");
 const { Chat } = require("../models/Chat");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
-exports.sendGlobalMessage  = asyncErrorHandler(async (req, res) => {
-    const { message } = req.body;
+exports.sendGlobalMessage = asyncErrorHandler(async (req, res) => {
+  const { message } = req.body;
 
   if (!message) {
     return res.status(400).json({
@@ -11,14 +12,25 @@ exports.sendGlobalMessage  = asyncErrorHandler(async (req, res) => {
     });
   }
 
+  // 1 Save message
   const chat = await Chat.create({
     user: req.user._id, // from auth middleware
     message,
   });
 
+  // 2️⃣ Populate user (important for frontend)
+  const populatedChat = await chat.populate(
+    "user",
+    "name email photo"
+  );
+
+  // 3️⃣ 🔥 Emit to all connected clients
+  getIO().emit("newMessage", populatedChat);
+
+  // 4️⃣ Respond to sender
   res.status(201).json({
     success: true,
-    chat,
+    chat: populatedChat,
   });
 });
 
@@ -32,7 +44,6 @@ exports.getGlobalChat = asyncErrorHandler(async (req, res) => {
     .sort({ createdAt: -1 }) // newest first
     .skip(skip)
     .limit(limit);
-    console.log(messages)
 
   res.status(200).json({
     success: true,
