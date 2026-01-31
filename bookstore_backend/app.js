@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 
 const rateLimit = require("express-rate-limit");
@@ -42,8 +41,7 @@ let limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   message: "Too many requests. Please try again after 15 minutes.",
 });
-// app.use("/api", limiter);
-app.use("/api/auth", limiter);
+
 app.use("/api/orders", limiter);
 
 app.use(express.json({ limit: "10kb" }));

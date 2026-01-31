@@ -8,7 +8,7 @@ const {
   getSellersOrders,
 } = require("../controllers/orderController");
 
-const { protect, adminOnly } = require("../middleware/authMiddleware");
+const { protect, restrictTo } = require("../middleware/authMiddleware");
 const validate = require("../middleware/validate.middleware");
 const { createOrderSchema } = require("../utils/validators/order.schema");
 
@@ -16,9 +16,11 @@ const { createOrderSchema } = require("../utils/validators/order.schema");
 router.post("/", protect, validate(createOrderSchema), placeOrder);
 router.get("/my", protect, getMyOrders);
 
-// admin
-router.get("/all", protect, adminOnly, getAllOrders);
 // seller
 router.get("/", protect, getSellersOrders);
+
+// admin
+router.get("/all", protect, restrictTo("admin", "operator"), getAllOrders);
+
 
 module.exports = router;

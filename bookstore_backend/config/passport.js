@@ -7,18 +7,23 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        if (!profile.emails?.[0]?.verified) {
+          return done(null, false, { message: "Email not verified" });
+        }
         const email = profile.emails[0].value;
-
-        let user = await User.findOne({ email });
-
+        const normalizedEmail = email.toLowerCase()
+        let user = await User.findOne({ email: normalizedEmail, isActive: true, });
+        if (user && !user.isActive) {
+          return done(null, false, { message: "Account disabled" });
+        }
         if (!user) {
           user = await User.create({
             name: profile.displayName,
-            email,
+            email: normalizedEmail,
             photo: profile.photos[0] ? profile.photos[0].value : undefined,
             role: "user", // DEFAULT
             provider: "google",
