@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     items: [
       {
@@ -17,6 +18,10 @@ const orderSchema = new mongoose.Schema(
         seller: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
+          required: true,
+        },
+        sellerName: {
+          type: String,
         },
         title: {
           type: String,
@@ -30,32 +35,74 @@ const orderSchema = new mongoose.Schema(
           type: Number, // price at time of order
           required: true,
         },
+        lineTotal: {
+          type: Number,
+          required: true,
+        },
         coverImage: {
           type: String,
           required: true,
         },
       },
     ],
+    subtotal: {
+      type: Number,
+      required: true,
+    },
+    tax: {
+      type: Number,
+      default: 0,
+    },
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    shippingFee: {
+      type: Number,
+      default: 0,
+    },
     totalAmount: {
       type: Number,
       required: true,
     },
-    status: {
+
+    paymentMethod: {
       type: String,
-      enum: ["pending", "paid", "shipped", "delivered", "cancelled"],
+      enum: ["COD", "UPI", "CARD"],
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed", "refunded"],
+      default: "pending"
+    },
+    orderStatus: {
+      type: String,
+      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
+    },
+    orderNumber: {
+      type: String,
+      unique: true,
+    },
+    shippingAddress: {
+      name: String,
+      phone: String,
+      line1: String,
+      line2: String,
+      city: String,
+      state: String,
+      pincode: String,
+      country: String,
     },
   },
   { timestamps: true },
 );
 
-// Orders by user (My Orders page)
-orderSchema.index({ user: 1, createdAt: -1 });
-
-// Seller orders (unwind items)
-orderSchema.index({ "items.book": 1 });
-
-// Order status filtering
-orderSchema.index({ status: 1 });
+//indexes
+orderSchema.index({ user: 1, createdAt: -1 });    // Orders by user (My Orders page)
+orderSchema.index({ "items.book": 1 });   // Seller orders (unwind items)
+orderSchema.index({ "items.seller": 1, createdAt: -1 });
+orderSchema.index({ orderStatus: 1 });    // Order status filtering
 
 module.exports = mongoose.model("Order", orderSchema);

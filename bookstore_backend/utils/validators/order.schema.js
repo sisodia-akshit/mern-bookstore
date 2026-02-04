@@ -1,16 +1,25 @@
 const { z } = require("zod");
 
-const orderItemSchema = z.object({
-  book: z.string().min(1, "Book ID is required"),
-  quantity: z.coerce.number().int().positive(),
-});
-
 const createOrderSchema = z.object({
   body: z.object({
-    items: z
-      .array(orderItemSchema)
-      .min(1, "Order must contain at least one item"),
+    addressId: z
+      .string()
+      .regex(/^[a-f\d]{24}$/i, "Invalid address ID"),
+
+    paymentMethod: z.enum(["COD", "UPI", "CARD"])
   }),
 });
 
-module.exports = { createOrderSchema };
+const updateOrderStatusSchema = z.object({
+  body: z.object({
+    status: z.enum([
+      "pending",
+      "confirmed",
+      "shipped",
+      "delivered",
+      "cancelled"
+    ])
+  })
+})
+
+module.exports = { createOrderSchema, updateOrderStatusSchema };

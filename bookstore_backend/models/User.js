@@ -29,12 +29,32 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "operator", "user"],
+      enum: ["admin", "operator", "seller", "user"],
       default: "user",
     },
     photo: {
       type: String,
     },
+
+    addresses: [
+      {
+        name: String,
+        phone: String,
+        line1: String,
+        line2: String,
+        city: String,
+        state: String,
+        pincode: String,
+        country: {
+          type: String,
+          enum: [
+            "India"
+          ],
+          default: "India"
+        },
+        isDefault: Boolean,
+      }
+    ],
     isActive: {
       type: Boolean,
       default: true,

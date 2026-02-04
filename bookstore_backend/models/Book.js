@@ -7,7 +7,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       minlength: [1, "Book title must have at least 1 character."],
       maxlength: [100, "Book title must not have more than 100 characters."],
-      lowercase:true,
+      lowercase: true,
       required: [true, "Title is required field!"],
       trim: true,
     },
@@ -15,6 +15,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       minlength: [1, "Author name must have at least 1 character."],
       maxlength: [25, "Author name must not have more than 25 characters."],
+      lowercase: true,
       required: [true, "Author is required field!"],
     },
     price: {
@@ -106,6 +107,7 @@ const bookSchema = new mongoose.Schema(
     },
     genres: {
       type: [String],
+      set: v => v.map(s => s.toLowerCase()),
       validate: {
         validator: (v) => v.length > 0 && v.length <= 5,
         message: "Genre must be between 1 and 5",
@@ -153,7 +155,7 @@ bookSchema.pre("aggregate", function () {
 // indexes
 bookSchema.index({ createdBy: 1 }); // Seller
 //// bookSchema.index({ genres: 1, stock: 1, price: 1 });
-bookSchema.index({ title: "text", genres:"text" }); //Search
+bookSchema.index({ title: "text", genres: "text" }); //Search
 bookSchema.index({ category: 1, genres: 1 }); // Filters / sorting
 //// bookSchema.index({ ratings: 1 }); // Filters / sorting
 

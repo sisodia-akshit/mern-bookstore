@@ -12,7 +12,7 @@ class OrderFeatures {
       }
 
       if (this.queryStr.status) {
-        filter.status = this.queryStr.status;
+        filter.orderStatus = this.queryStr.status;
       }
       // if (this.queryStr.email) {
       //   filter.email = { $regex: this.queryStr.email };

@@ -44,7 +44,7 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
       // Shape final response
       {
         $project: {
-          status: "$status",
+          orderStatus: "$orderStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
 
@@ -64,7 +64,7 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
       },
       {
         $group: {
-          _id: "$status",
+          _id: "$orderStatus",
           count: { $sum: 1 },
         },
       },
@@ -73,11 +73,10 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
 
   const orders = {
     pending:0,
-    placed: 0,
+    confirmed: 0,
+    shipped: 0,
     delivered: 0,
     cancelled: 0,
-    shipped: 0,
-    paid: 0,
   };
 
   orderStats.forEach((stat) => {
@@ -100,7 +99,7 @@ exports.getAdminDashboardStats = asyncErrorHandler(async (req, res) => {
       Order.aggregate([
         {
           $group: {
-            _id: "$status",
+            _id: "$orderStatus",
             count: { $sum: 1 },
           },
         },
@@ -109,11 +108,10 @@ exports.getAdminDashboardStats = asyncErrorHandler(async (req, res) => {
 
   const orders = {
     pending:0,
-    placed: 0,
+    confirmed: 0,
+    shipped: 0,
     delivered: 0,
     cancelled: 0,
-    shipped: 0,
-    paid: 0,
   };
 
   orderStats.forEach((stat) => {

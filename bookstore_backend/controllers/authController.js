@@ -32,7 +32,8 @@ const createSendResponse = async (res, code, user) => {
   const refreshToken = signRefreshToken(user._id);
 
   // Option A: Store refresh token in DB (for revocation)
-  await RefreshToken.create({
+  // await RefreshToken.deleteMany({ user: user._id });
+  const checkToken = await RefreshToken.create({
     token: crypto.createHash("sha256").update(refreshToken).digest("hex"),
     user: user._id,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -107,16 +108,14 @@ exports.register = asyncErrorHandler(async (req, res) => {
 });
 
 // LOGIN
-exports.login = asyncErrorHandler(async (req, res) => {
+exports.login = asyncErrorHandler(async (req, res, next) => {
   const { email, password } = req.body;
-
   const normalizedEmail = email.toLowerCase();
 
   const user = await User.findOne({ email: normalizedEmail, isActive: true }).select("+password");
-
   if (!user) {
     await bcrypt.hash(password, 12);
-    throw new CustomError("Invalid email or password", 401);
+    throw new CustomError("Invalid email or password", 400);
   }
 
   if (user.provider !== "local") {
@@ -128,13 +127,14 @@ exports.login = asyncErrorHandler(async (req, res) => {
   }
 
   const isValid = await user.isPasswordCorrect(password);
+
   if (!isValid) {
     user.loginAttempts = Math.min((user.loginAttempts || 0) + 1, 5);
     if (user.loginAttempts >= 5) {
       user.lockoutUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 min lockout
     }
     await user.save({ validateBeforeSave: false });
-    throw new CustomError("Invalid email or password", 401);
+    return next(new CustomError("Invalid email or password", 400));
   }
 
   user.loginAttempts = 0;
@@ -142,6 +142,10 @@ exports.login = asyncErrorHandler(async (req, res) => {
   await user.save({ validateBeforeSave: false });
 
   await createSendResponse(res, 200, user);
+  return res.status(200).json({
+    status: "success",
+    message: "Login successful",
+  });
 });
 
 exports.forgetPassword = asyncErrorHandler(async (req, res) => {
@@ -351,11 +355,12 @@ exports.refreshToken = asyncErrorHandler(async (req, res) => {
   let decoded;
   try {
     decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 
-  if (decoded.type !== "refresh") {
+  if (decoded.type !== 'refresh') {
     return res.status(401).json({ message: "Invalid token" });
   }
 
