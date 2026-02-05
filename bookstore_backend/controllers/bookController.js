@@ -91,10 +91,9 @@ exports.getBookById = asyncErrorHandler(async (req, res, next) => {
     throw new CustomError("Invalid book ID", 400);
   }
 
-  const book = await Book.findById(id).populate(
-    "reviews.user",
-    "name email photo",
-  );
+  const book = await Book.findById(id)
+    .populate("reviews.user", "name email photo")
+    .populate("createdBy", "name email photo");
 
   if (!book) {
     return next(new CustomError("Book not found!", 404));

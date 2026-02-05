@@ -18,7 +18,6 @@ const sendResponse = ({ res, code, total, data, message }) => {
   });
 };
 
-
 exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
   const { addressId, paymentMethod } = req.body;
 
@@ -38,9 +37,7 @@ exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
     const user = await User.findById(req.user._id).session(session);
     if (!user) throw new CustomError("User not found", 404);
 
-    const address = user.addresses.find(
-      a => a._id.toString() === addressId
-    );
+    const address = user.addresses.find((a) => a._id.toString() === addressId);
     if (!address) throw new CustomError("Address not found", 404);
 
     // 2. Fetch cart
@@ -57,7 +54,7 @@ exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
       const book = await Book.findOneAndUpdate(
         { _id: item.book, stock: { $gte: item.quantity } },
         { $inc: { stock: -item.quantity } },
-        { new: true, session }
+        { new: true, session },
       );
 
       if (!book) {
@@ -87,7 +84,7 @@ exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
     const counter = await Counter.findOneAndUpdate(
       { name: "order" },
       { $inc: { value: 1 } },
-      { new: true, upsert: true, session }
+      { new: true, upsert: true, session },
     );
     const orderNumber = `ORD-${new Date().getFullYear()}-${String(counter.value).padStart(6, "0")}`;
 
@@ -118,14 +115,14 @@ exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
           },
         },
       ],
-      { session }
+      { session },
     );
 
     // 7. Clear cart
     await Cart.updateOne(
       { user: req.user._id },
       { $set: { items: [], totalAmount: 0 } },
-      { session }
+      { session },
     );
 
     await session.commitTransaction();
@@ -142,7 +139,6 @@ exports.placeOrder = asyncErrorHandler(async (req, res, next) => {
     next(error);
   }
 });
-
 
 // USER ORDERS
 exports.getMyOrders = asyncErrorHandler(async (req, res) => {
@@ -161,7 +157,27 @@ exports.getMyOrders = asyncErrorHandler(async (req, res) => {
 
   sendResponse({ res, code: 200, total, data: await features.query });
 });
+exports.getOrderById = asyncErrorHandler(async (req, res, next) => {
+  const { orderId } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    return next(new CustomError("Invalid order ID", 400));
+  }
+  const order = await Order.findById(orderId).populate(
+    "items.book",
+    "title author coverImage",
+  );
+  if (!order) {
+    return next(new CustomError("Order not found", 404));
+  }
+  // if (req.user._id !== order.user) {
+  //   return next(new CustomError("Order not found!!!", 404));
+  // }
+  res.status(200).json({
+    status: "success",
+    data: order,
+  });
+});
 
 // seller ORDERS
 exports.getSellersOrders = asyncErrorHandler(async (req, res) => {
@@ -237,7 +253,6 @@ exports.getSellersOrders = asyncErrorHandler(async (req, res) => {
 exports.updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
   const { orderId } = req.params;
   const { status } = req.body;
-  console.log(orderId)
 
   if (!mongoose.Types.ObjectId.isValid(orderId)) {
     return next(new CustomError("Invalid order ID", 400));
@@ -256,11 +271,9 @@ exports.updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
     seller: ["shipped"],
     admin: ["confirmed", "shipped", "delivered", "cancelled"],
   };
-  
+
   if (!allowedByRole[role]?.includes(status)) {
-    return next(
-      new CustomError("You are not allowed to set this status", 403)
-    );
+    return next(new CustomError("You are not allowed to set this status", 403));
   }
 
   /* 2️⃣ State-based valid transitions */
@@ -276,21 +289,19 @@ exports.updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
     return next(
       new CustomError(
         `Cannot change order from ${currentStatus} to ${status}`,
-        400
-      )
+        400,
+      ),
     );
   }
 
   /* 3️⃣ Seller ownership check (important) */
   if (role === "seller") {
     const sellerOwnsItem = order.items.some(
-      item => item.seller.toString() === req.user._id.toString()
+      (item) => item.seller.toString() === req.user._id.toString(),
     );
 
     if (!sellerOwnsItem) {
-      return next(
-        new CustomError("You can only update your own orders", 403)
-      );
+      return next(new CustomError("You can only update your own orders", 403));
     }
   }
 
@@ -312,8 +323,7 @@ exports.updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
       orderStatus: order.orderStatus,
     },
   });
-
-})
+});
 
 // ADMIN: ALL ORDERS
 exports.getAllOrders = asyncErrorHandler(async (req, res) => {
