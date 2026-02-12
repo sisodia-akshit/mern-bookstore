@@ -3,7 +3,10 @@ const User = require("../models/User");
 
 // check if user is logged in
 exports.protect = async (req, res, next) => {
-  const token = process.env.NODE_ENV === "production" ? req.cookies["__Host-token"] : req.cookies.token;
+  const token =
+    process.env.NODE_ENV === "production"
+      ? req.cookies["__Host-token"]
+      : req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ message: "Not authenticated" });
@@ -22,15 +25,19 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({ message: "User not found" });
   }
   if (req.user.changedPasswordAfter(decoded.iat)) {
-    return res.status(401).json({ message: "Password was changed. Please log in again." });
+    return res
+      .status(401)
+      .json({ message: "Password was changed. Please log in again." });
   }
 
   next();
 };
 
-
 exports.isLogged = async (req, res, next) => {
-  const token = process.env.NODE_ENV === "production" ? req.cookies["__Host-token"] : req.cookies.token;
+  const token =
+    process.env.NODE_ENV === "production"
+      ? req.cookies["__Host-token"]
+      : req.cookies.token;
 
   if (!token) {
     return next();
@@ -48,7 +55,6 @@ exports.isLogged = async (req, res, next) => {
   if (!req.user || req.user.changedPasswordAfter(decoded.iat)) {
     req.user = undefined;
   }
-
   next();
 };
 
@@ -71,6 +77,7 @@ exports.restrictTo = (...roles) => {
         message: "You do not have permission to perform this action",
       });
     }
+    console.log("workingRestrict");
     next();
   };
 };

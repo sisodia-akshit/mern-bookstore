@@ -43,7 +43,7 @@ let limiter = rateLimit({
   message: "Too many requests. Please try again after 15 minutes.",
 });
 
-app.use("/api/orders", limiter);
+// app.use("/api/orders", limiter);
 
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
@@ -87,4 +87,4 @@ app.all("/{*any}", (req, res, next) => {
 
 app.use(errorHandler);
 
-module.exports = app;
+module.exports = app;  

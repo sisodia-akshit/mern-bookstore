@@ -72,7 +72,7 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
   ]);
 
   const orders = {
-    pending:0,
+    pending: 0,
     confirmed: 0,
     shipped: 0,
     delivered: 0,
@@ -82,9 +82,11 @@ exports.getDashboardStats = asyncErrorHandler(async (req, res) => {
   orderStats.forEach((stat) => {
     orders[stat._id] = stat.count;
   });
+  console.log(orderStats, orders);
 
   res.status(200).json({
-    myTotalBooks,
+    totalBooks: myTotalBooks,
+    totalOrders: orderStats.length,
     orders,
   });
 });
@@ -107,7 +109,7 @@ exports.getAdminDashboardStats = asyncErrorHandler(async (req, res) => {
     ]);
 
   const orders = {
-    pending:0,
+    pending: 0,
     confirmed: 0,
     shipped: 0,
     delivered: 0,

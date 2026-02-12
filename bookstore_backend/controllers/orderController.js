@@ -220,6 +220,9 @@ exports.getSellersOrders = asyncErrorHandler(async (req, res) => {
         _id: "$_id",
         status: { $first: "$status" },
         createdAt: { $first: "$createdAt" },
+        paymentMethod:{$first:"$paymentMethod"},
+        orderNumber:{$first:"$orderNumber"},
+        orderStatus:{$first:"$orderStatus"},
 
         user: {
           $first: {
@@ -326,7 +329,7 @@ exports.updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
 });
 
 // ADMIN: ALL ORDERS
-exports.getAllOrders = asyncErrorHandler(async (req, res) => {
+exports.getAllOrders = asyncErrorHandler(async (req, res, next) => {
   const baseQuery = Order.find()
     .populate("user", "name email")
     .populate("items.book", "title author coverImage");

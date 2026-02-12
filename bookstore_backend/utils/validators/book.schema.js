@@ -88,7 +88,8 @@ exports.updateBookSchema = z.object({
       .array(z.string())
       .min(1, "At least one genre is required")
       .max(5, "Maximum 5 genres are allowed")
-      .refine((genres) => genres.every((genre) => ALL_GENRES.includes(genre)), {
+      // .refine((genres) => genres.every((genre) => ALL_GENRES.includes(genre)), {
+      .refine((genres) => genres.every((genre) => ALL_GENRES.includes(genre.charAt(0).toUpperCase() + genre.slice(1).toLowerCase())), {
         message: "Invalid genre selected",
       }),
   }),

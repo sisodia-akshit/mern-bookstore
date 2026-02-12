@@ -16,8 +16,8 @@ const {
 
 const {
   protect,
-  adminOnly,
   isLogged,
+  restrictTo,
 } = require("../middleware/authMiddleware");
 const validate = require("../middleware/validate.middleware");
 const {
@@ -26,7 +26,7 @@ const {
   addReviewSchema,
 } = require("../utils/validators/book.schema");
 
-router.get("/book-by-category/:category",getBookByCategory)
+router.get("/book-by-category/:category", getBookByCategory);
 
 // public
 router.get("/", getBooks);
@@ -42,10 +42,10 @@ router.delete("/mybook/:id", protect, deleteBook);
 router.patch(
   "/book/:id",
   protect,
-  adminOnly,
+  restrictTo("admin"),
   validate(updateBookSchema),
   adminUpdateBook,
-)
-router.delete("/book/:id", protect, adminOnly, adminDeleteBook);
+);
+router.delete("/book/:id", protect, restrictTo("admin"), adminDeleteBook);
 
 module.exports = router;

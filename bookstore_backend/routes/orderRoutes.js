@@ -20,7 +20,9 @@ const {
 // user
 router.get("/my", protect, getMyOrders);
 router.post("/", protect, validate(createOrderSchema), placeOrder);
-router.get("/:orderId", protect, getOrderById);
+
+// admin
+router.get("/all", protect, restrictTo("admin", "operator"), getAllOrders);
 
 // seller
 router.get("/", protect, getSellersOrders);
@@ -31,7 +33,7 @@ router.patch(
   updateOrderStatus,
 );
 
-// admin
-router.get("/all", protect, restrictTo("admin", "operator"), getAllOrders);
+// user
+router.get("/:orderId", protect, getOrderById);
 
 module.exports = router;
