@@ -1,0 +1,55 @@
+.orders {
+  padding: 20px 15px;
+}
+
+.order {
+  max-width: 900px;
+  margin: auto;
+  box-shadow: 0 0 5px #ccc;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  padding: 20px 15px;
+  position: relative;
+  & b {
+    color: var(--primary-color);
+  }
+  & .btn {
+    position: absolute;
+    right: 15px;
+    bottom: 10px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+}
+
+.orderNumber {
+  color: #333;
+}
+.orderDate {
+  color: #555;
+  font-size: 0.9rem;
+}
+.orderItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.orderItemCard {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  border: 1px solid #ccc;
+  padding: 10px 10px;
+  border-radius: 15px;
+  background-color: #fff;
+}
+
+.orderItemCard img {
+  height: 120px;
+  min-width: 120px;
+  object-fit: contain;
+  text-align: center;
+  overflow: hidden;
+}

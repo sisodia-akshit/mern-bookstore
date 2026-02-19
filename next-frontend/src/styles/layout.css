@@ -1,0 +1,243 @@
+
+
+.sidebar {
+  box-sizing: border-box;
+  width: 220px;
+  height: 100vh;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 2000;
+}
+
+.sidebar .sidebarLink {
+  display: block;
+  color: #ccc;
+  font-size: 1rem;
+  margin: 10px 0;
+  text-decoration: none;
+}
+
+.sidebar .sidebarLink.active {
+  color: white;
+  /* font-weight: bold; */
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 900;
+}
+.sidebar .sidebarLogin {
+  position: absolute;
+  bottom: 10px;
+  width: 180px;
+  text-align: center;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+.sidebarLogin:hover {
+  border: 2px solid #fff;
+}
+
+.sidebar.show {
+  transform: translateX(0);
+}
+
+/* Notification Card  */
+/* Notification Card  */
+
+.notificationcard {
+  min-width: 300px;
+  max-width: 400px;
+  min-height: 250px;
+  text-align: center;
+  width: fit-content;
+  height: fit-content;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  box-shadow: 1px 1px 5px #0002;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  padding: 20px 20px 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+
+  & h2 {
+    position: absolute;
+    top: 20px;
+    color: var(--primary-color);
+  }
+  & button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    width: 120px;
+    position: absolute;
+    bottom: 20px;
+  }
+}
+
+/* star  */
+/* star  */
+/* star  */
+.stars {
+  position: relative;
+  display: inline-block;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.stars-empty {
+  color: #ddd;
+}
+
+.stars-filled {
+  color: #c89b3c;
+  /* color: var(--primary-color); */
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.starLineContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  /* background-color: red; */
+}
+
+.starLine {
+  display: inline-block;
+  /* position: relative; */
+  /* background-color: blue; */
+  width: 100%;
+  height: 10px;
+}
+.empty-starLine {
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #ccc;
+}
+.filled-starLine {
+  height: 10px;
+  margin-top: -10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+}
+/*Book Loading  */
+/*Book Loading  */
+/*Book Loading  */
+.skeleton {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.cover {
+  width: 140px;
+  height: 200px;
+}
+.title {
+  width: 60%;
+  height: 20px;
+  margin-top: 12px;
+}
+.text {
+  width: 90%;
+  height: 14px;
+  margin-top: 8px;
+}
+.button {
+  width: 120px;
+  height: 36px;
+  margin-top: 16px;
+}
+
+/* Loading  */
+/* Loading  */
+/* Loading  */
+.page-loader {
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.muted {
+  color: #777;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Loading ends  */
+
+/* Input   */
+/* Input   */
+/* Input   */
+.form-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.form-field label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+
+  padding: 0 2px;
+  font-size: 0.8rem;
+  color: #000;
+  background-color: #fff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: 0.2s ease;
+}
+
+.form-field label.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

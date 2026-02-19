@@ -20,11 +20,18 @@ const signAccessToken = (id) => {
   return token;
 };
 const signRefreshToken = (id) => {
-  if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET.length < 32) {
-    throw new Error("JWT_REFRESH_SECRET must be set and at least 32 characters");
+  if (
+    !process.env.JWT_REFRESH_SECRET ||
+    process.env.JWT_REFRESH_SECRET.length < 32
+  ) {
+    throw new Error(
+      "JWT_REFRESH_SECRET must be set and at least 32 characters",
+    );
   }
 
-  return jwt.sign({ id, type: "refresh" }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id, type: "refresh" }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 const createSendResponse = async (res, code, user) => {
@@ -49,7 +56,9 @@ const createSendResponse = async (res, code, user) => {
   };
 
   const cookieName = isProduction ? "__Host-token" : "token";
-  const refreshCookieName = isProduction ? "__Host-refreshToken" : "refreshToken";
+  const refreshCookieName = isProduction
+    ? "__Host-refreshToken"
+    : "refreshToken";
   res.cookie(cookieName, accessToken, options);
   res.cookie(refreshCookieName, refreshToken, {
     ...options,
@@ -112,7 +121,10 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const normalizedEmail = email.toLowerCase();
 
-  const user = await User.findOne({ email: normalizedEmail, isActive: true }).select("+password");
+  const user = await User.findOne({
+    email: normalizedEmail,
+    isActive: true,
+  }).select("+password");
   if (!user) {
     await bcrypt.hash(password, 12);
     throw new CustomError("Invalid email or password", 400);
@@ -206,14 +218,16 @@ exports.forgetPassword = asyncErrorHandler(async (req, res) => {
 });
 
 exports.resetPassword = asyncErrorHandler(async (req, res, next) => {
-  const token = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .digest("hex");
-  const user = await User.findOne({
-    passwordResetToken: token,
+
+  // const token = crypto
+  //   .createHash("sha256")
+  //   .update(req.params.token)
+  //   .digest("hex");
+  let user = await User.findOne({
+    passwordResetToken: req.params.token,
     passwordResetTokenExpires: { $gt: Date.now() },
   });
+
   if (!user) {
     return next(new CustomError("Invalid token or expired token", 400));
   }
@@ -237,8 +251,12 @@ exports.logout = asyncErrorHandler(async (req, res) => {
     path: "/",
   };
 
-  const tokenName = process.env.NODE_ENV === "production" ? "__Host-token" : "token";
-  const refreshTokenName = process.env.NODE_ENV === "production" ? "__Host-refreshToken" : "refreshToken";
+  const tokenName =
+    process.env.NODE_ENV === "production" ? "__Host-token" : "token";
+  const refreshTokenName =
+    process.env.NODE_ENV === "production"
+      ? "__Host-refreshToken"
+      : "refreshToken";
 
   res.cookie(tokenName, "", cookieOptions);
   res.cookie(refreshTokenName, "", cookieOptions);
@@ -337,7 +355,11 @@ exports.verifyOtp = asyncErrorHandler(async (req, res) => {
 
   await OTP.deleteOne({ email: normalizedEmail });
 
-  await VerifiedEmail.findOneAndUpdate({ email: normalizedEmail }, {}, { upsert: true });
+  await VerifiedEmail.findOneAndUpdate(
+    { email: normalizedEmail },
+    {},
+    { upsert: true },
+  );
 
   res.status(200).json({
     message: "Email verified successfully.",
@@ -345,7 +367,10 @@ exports.verifyOtp = asyncErrorHandler(async (req, res) => {
 });
 
 exports.refreshToken = asyncErrorHandler(async (req, res) => {
-  const refreshCookieName = process.env.NODE_ENV === "production" ? "__Host-refreshToken" : "refreshToken";
+  const refreshCookieName =
+    process.env.NODE_ENV === "production"
+      ? "__Host-refreshToken"
+      : "refreshToken";
   const refreshToken = req.cookies[refreshCookieName];
 
   if (!refreshToken) {
@@ -355,17 +380,19 @@ exports.refreshToken = asyncErrorHandler(async (req, res) => {
   let decoded;
   try {
     decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 
-  if (decoded.type !== 'refresh') {
+  if (decoded.type !== "refresh") {
     return res.status(401).json({ message: "Invalid token" });
   }
 
   // Optional: Check if token exists in DB (for revocation)
-  const hashedToken = crypto.createHash("sha256").update(refreshToken).digest("hex");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
   const stored = await RefreshToken.findOne({
     token: hashedToken,
     user: decoded.id,
@@ -428,6 +455,7 @@ exports.getGoogleCallback = async (req, res) => {
   const redirectMap = {
     admin: process.env.ADMIN_URL,
     store: process.env.STORE_URL,
+    chat: process.env.CHAT_URL,
   };
   const redirectUrl = redirectMap[redirect] || process.env.STORE_URL;
 

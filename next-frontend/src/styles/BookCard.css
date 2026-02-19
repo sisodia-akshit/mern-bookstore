@@ -1,0 +1,83 @@
+.bookCard {
+  display: block;
+  background-color: var(--background-color);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+  position: relative;
+}
+.bookCard:hover {
+  transform: translateY(-16px);
+}
+
+.bookCard img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+.bookCard h3 {
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+.bookCard h5 {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.bookCard button {
+  margin-bottom: 15px;
+}
+
+/* .genres {
+  display: flex;
+  overflow-x: scroll;
+} */
+.bookCard .genres p {
+  display: inline-block;
+  background: var(--background-color);
+  box-shadow: 0 1px 5px rgba(9, 9, 9, 0.1) inset;
+  color: #999;
+  font-weight: 500;
+  text-decoration: none;
+  text-transform: capitalize;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin: 3px;
+  transition: 0.3s;
+}
+.bookCard .genres p:hover {
+  background: var(--secondary-text);
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .bookCard .genres {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .bookCard .genres {
+    display: block;
+  }
+}
+@media (max-width: 640px) {
+  .bookCard .genres {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .bookCard .genres {
+    display: none;
+  }
+  .bookCard h3 {
+    font-size: 0.8rem;
+  }
+}

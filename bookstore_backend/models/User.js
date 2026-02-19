@@ -109,5 +109,6 @@ userSchema.methods.isLockedOut = function () {
 userSchema.index({ name: "text" });
 userSchema.index({ isActive: 1 });
 userSchema.index({ passwordResetToken: 1 });
+userSchema.index({ name: 1, email: 1 });
 
 module.exports = mongoose.model("User", userSchema);

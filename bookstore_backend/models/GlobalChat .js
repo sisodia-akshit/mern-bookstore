@@ -17,4 +17,4 @@ const chatSchema = new mongoose.Schema(
   { timestamps: true },
 );
 chatSchema.index({ createdAt: -1 });
-export const Chat = mongoose.model("Chat", chatSchema);
+export const GlobalChat  = mongoose.model("GlobalChat ", chatSchema);

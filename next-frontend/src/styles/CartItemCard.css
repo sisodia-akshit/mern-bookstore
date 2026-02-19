@@ -1,0 +1,78 @@
+.cartItemCard {
+  position: relative;
+  display: flex;
+  width: 100%;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px 50px 10px 20px;
+  gap: 20px;
+  text-transform: capitalize;
+  margin: 20px 0;
+  transition: 0.1s ease-out;
+  border-radius: 15px;
+}
+/* .cartItemCard:hover {
+  transform: translateY(-6px) scale(1.05);
+} */
+.cartItemCard .info{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cartItemCard .price{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+.cartItemCard .CITitle{
+  & h3{
+    max-height: 110px;
+    overflow: hidden;
+  }
+}
+.cartItemCard img {
+  height: 120px;
+  min-width: 120px;
+  object-fit: contain;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cartItemCard button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #777;
+  background-color: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  & i {
+    font-size: 1.5rem;
+  }
+}
+.cartItemCard button:hover {
+  transform: scale(1.2);
+}
+.cartItemCard .btn {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+.cartItemCard .btn:hover {
+  border: 1px solid var(--primary-color);
+}
+
+@media (max-width: 640px) {
+  .info h3 {
+    font-size: 1rem;
+  }
+  .cartItemCard img{
+    height: 80px;
+    min-width: 80px;
+  }
+}

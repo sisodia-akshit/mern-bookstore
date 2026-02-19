@@ -1,0 +1,45 @@
+.contact {
+  & h1 {
+    color: #333;
+  }
+}
+.contactMe {
+  width: 100%;
+  max-width: 750px;
+  margin: auto;
+  border-radius: 10px;
+  padding:30px 20px;
+  box-shadow: 0 0 5px rgba(195, 195, 195, 0.67);
+  background-color: #fff;
+
+  & input{
+    border: 1px solid #eee ;
+  }
+
+  & textarea{
+    max-height: 80px;
+    border: 1px solid #eee ;
+  }
+
+  & button{
+    max-width: 200px;
+  }
+
+}
+.messageLength{
+  color: #999;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: right;
+}
+.contactMe .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.contectMessage {
+  font-family: Arial, sans-serif;
+  height: 100px;
+  font-size: 1rem;
+}

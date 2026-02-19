@@ -1,0 +1,58 @@
+.getBookSidebar {
+  width: 100vw;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #0002;
+  z-index: 1000;
+}
+.getBookSidebarMain {
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background-color: #fff;
+  position: absolute;
+  right: 0;
+  top: 0;
+  /* padding: 20px; */
+  color: #555;
+}
+.getBookSidebarMain .getBookSidebarClose {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+.getBookSidebarDetails {
+  padding: 20px;
+  & p{
+    margin-top: 8px;
+    text-transform: capitalize;
+  }
+}
+
+
+.getBookSidebarButtons {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  bottom: 20px;
+
+  & .btn {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+}
+
+@media (max-width: 768px) {
+  .getBookSidebarMain {
+    max-width: 300px;
+  }
+}
+@media (max-width: 480px) {
+  .getBookSidebarMain {
+    max-width: 250px;
+  }
+}

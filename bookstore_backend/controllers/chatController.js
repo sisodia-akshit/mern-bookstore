@@ -1,5 +1,5 @@
 const { getIO } = require("../config/socket");
-const { Chat } = require("../models/Chat");
+const { GlobalChat  } = require("../models/GlobalChat ");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
 exports.sendGlobalMessage = asyncErrorHandler(async (req, res) => {
@@ -13,7 +13,7 @@ exports.sendGlobalMessage = asyncErrorHandler(async (req, res) => {
   }
 
   // 1 Save message
-  const chat = await Chat.create({
+  const chat = await GlobalChat .create({
     user: req.user._id, // from auth middleware
     message,
   });
@@ -39,7 +39,7 @@ exports.getGlobalChat = asyncErrorHandler(async (req, res) => {
   const limit = Number(req.query.limit) || 20;
   const skip = (page - 1) * limit;
 
-  const messages = await Chat.find()
+  const messages = await GlobalChat .find()
     .populate("user", "name email photo")
     .sort({ createdAt: -1 }) // newest first
     .skip(skip)

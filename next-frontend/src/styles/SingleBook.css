@@ -1,0 +1,235 @@
+.singleBookMain {
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  text-transform: capitalize;
+}
+
+.singleBookTop {
+  display: flex;
+  width: 100%;
+  position: relative;
+  gap: 20px;
+  padding: 10px;
+  border: 1px solid #d6cfc7;
+  border-radius: 8px;
+}
+.singleBookTop img {
+  min-width: 200px;
+  width: 200px;
+  height: 280px;
+  object-fit: contain;
+  /* object-fit: cover; */
+  border: 1px solid #d6cfc7;
+  background: #fff;
+  border-radius: 5px;
+}
+.singleBookTop .SBookTopInfo {
+  height: 280px;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.singleBookMain h2 {
+  color: var(--primary-color);
+  transition: 0.2s ease-in-out;
+}
+.singleBookTop .SBookTopInfo .SBookAuthor {
+  display: flex;
+  color: #555;
+  padding-top: 10px;
+
+  & i {
+    color: var(--primary-color);
+  }
+}
+.SBookPrice {
+  display: flex;
+  color: var(--secondary-color);
+  margin-top: 10px;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+.SBookPricePhone {
+  display: flex;
+  color: var(--secondary-color);
+  margin-top: 10px;
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+.SBookDescription {
+  height: 73px;
+  display: inline-block;
+  grid-template-columns: repeat(auto, 2);
+  margin-top: 10px;
+  overflow: hidden;
+  color: rgb(50, 50, 50);
+  margin-bottom: 8px;
+}
+.singleBookTop .SBookTopInfo .SBookButtons {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  gap: 10px;
+
+  & button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+  & button:hover {
+    opacity: 0.9;
+  }
+}
+
+.bookInfo {
+  position: relative;
+  right: 0;
+  min-height: 300px;
+  /* max-width: 500px; */
+  width: 100%;
+  padding: 20px;
+  background: var(--background-color);
+  border: 1px solid #d6cfc7;
+  border-radius: 12px;
+  position: relative;
+  color: #333;
+
+  & hr {
+    border: 1px solid var(--primary-color);
+    margin-top: 10px;
+  }
+  & h2,
+  b {
+    color: var(--primary-color);
+  }
+}
+.bookInfoTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bookInfoTop .productRating {
+  cursor: pointer;
+  width: fit-content;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 0.2rem 0.5rem;
+  color: #515151;
+  display: flex;
+}
+
+.bookInfo p {
+  margin-top: 10px;
+}
+
+/* ratings and Rewview    */
+/* ratings and Rewview    */
+.RatingsAndReviews {
+  position: relative;
+  right: 0;
+  /* max-width: 500px; */
+  width: 100%;
+  padding: 20px;
+  background: var(--background-color);
+  position: relative;
+  color: #333;
+  display: flex;
+  gap: 10px;
+
+  & hr {
+    border: 1px solid var(--primary-color);
+    margin-top: 10px;
+  }
+  & h2,
+  b {
+    color: var(--primary-color);
+    text-transform: none;
+  }
+}
+.reviewAndRatingLeft {
+  padding: 10px 0;
+  text-align: center;
+  width: 50%;
+  border-right: 1px solid #ccc;
+  padding-right: 10px;
+
+  & h1 {
+    font-size: 4rem;
+    font-weight: 500;
+  }
+  & p {
+    font-size: 0.8rem;
+    text-transform: none;
+  }
+}
+.reviewAndRatingRight {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 40px;
+  position: relative;
+  & .btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+}
+
+/* ## customerReviews */
+/* ## customerReviews */
+.customerReviews {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  position: relative;
+  color: #333;
+}
+
+@media (max-width: 1024px) {
+  .singleBookMain {
+    height: 100%;
+    flex-direction: column;
+  }
+  .singleBookMain h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .singleBookTop {
+    padding: 0;
+    border: none;
+  }
+
+  .singleBookTop .SBookTopInfo {
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .singleBookTop {
+    height: 220px;
+    min-height: 220px;
+    gap: 10px;
+  }
+  .singleBookTop img {
+    min-width: 150px;
+    height: 220px;
+  }
+  .singleBookTop .SBookTopInfo {
+    height: 220px;
+  }
+  .singleBookMain h2 {
+    font-size: 1.3rem;
+  }
+  .singleBookMain .singleBookTitle {
+    font-size: 1.1rem;
+  }
+  .singleBookTop .SBookTopInfo .SBookDescription {
+    display: none;
+  }
+}

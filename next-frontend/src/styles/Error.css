@@ -1,0 +1,14 @@
+.networkError{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding:20px;
+    text-align: center;
+    color: #333;
+
+    & p{
+        margin-top: 10px;
+    }
+}

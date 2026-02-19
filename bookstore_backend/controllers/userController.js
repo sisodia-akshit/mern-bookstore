@@ -3,23 +3,65 @@ const User = require("../models/User");
 const ApiFeatures = require("../utils/ApiFeatures");
 const CustomError = require("../utils/CustomError");
 const mongoose = require("mongoose");
+const UserFeatures = require("../utils/UserFeatures");
 
-exports.getUsers = asyncErrorHandler(async (req, res) => {
-  const totalUsers = await User.countDocuments(
-    req.query.email ? { email: { $regex: req.query.email } } : {},
-  );
-  const features = new ApiFeatures(User.find(), req.query)
-    .filter()
+exports.getUsers = asyncErrorHandler(async (req, res, next) => {
+  const search = req.query.search;
+
+  // -------------------------
+  // Find by ID
+  // -------------------------
+  if (search && mongoose.Types.ObjectId.isValid(search)) {
+    const isUser = await User.findById(search).select("-password");
+
+    if (!isUser) {
+      return next(new CustomError("User not found!", 404));
+    }
+
+    return res.status(200).json({
+      status: "success",
+      total: 1,
+      data: [isUser],
+    });
+  }
+
+  // -------------------------
+  // Search by name OR email
+  // -------------------------
+
+  const queryObj = {};
+
+  if (search) {
+    queryObj.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Optional: exclude current user
+  if (req.user) {
+    queryObj._id = { $ne: req.user._id };
+  }
+
+  const totalUsers = await User.countDocuments(queryObj);
+
+  const features = new UserFeatures(
+    User.find(queryObj),
+    req.query
+  )
     .sort()
     .limitFields()
     .paginate();
 
+  const users = await features.query;
+
   res.status(200).json({
     status: "success",
     total: totalUsers,
-    data: await features.query,
+    data: users,
   });
 });
+
 
 exports.setUserRole = asyncErrorHandler(async (req, res) => {
   const { role } = req.body;
@@ -46,6 +88,8 @@ exports.setUserRole = asyncErrorHandler(async (req, res) => {
   });
 });
 
+
+
 exports.getMe = asyncErrorHandler(async (req, res) => {
   const user = await User.findById(req.user.id).select("-password");
   res.json({ user });
@@ -57,8 +101,8 @@ exports.addAddress = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
   if (!user) {
-    return next(new CustomError("User not found!", 404))
-  };
+    return next(new CustomError("User not found!", 404));
+  }
 
   const isFirstAddress = user.addresses.length === 0;
 
@@ -76,7 +120,7 @@ exports.addAddress = asyncErrorHandler(async (req, res, next) => {
 
   await user.save();
 
-  const defaultAddress = user.addresses.find(a => a.isDefault);
+  const defaultAddress = user.addresses.find((a) => a.isDefault);
 
   res.status(201).json({
     status: "success",
@@ -85,7 +129,6 @@ exports.addAddress = asyncErrorHandler(async (req, res, next) => {
       addresses: user.addresses,
       defaultAddress,
     },
-
   });
 });
 
@@ -103,20 +146,20 @@ exports.setDefaultAddress = asyncErrorHandler(async (req, res, next) => {
   }
 
   const addressExists = user.addresses.find(
-    a => a._id.toString() === address
+    (a) => a._id.toString() === address,
   );
 
   if (!addressExists) {
     return next(new CustomError("Address not found!", 404));
   }
 
-  user.addresses.forEach(a => {
+  user.addresses.forEach((a) => {
     a.isDefault = a._id.toString() === address;
   });
 
   await user.save();
 
-  const defaultAddress = user.addresses.find(a => a.isDefault);
+  const defaultAddress = user.addresses.find((a) => a.isDefault);
 
   res.status(200).json({
     status: "success",
@@ -125,7 +168,5 @@ exports.setDefaultAddress = asyncErrorHandler(async (req, res, next) => {
       addresses: user.addresses,
       defaultAddress,
     },
-
   });
 });
-

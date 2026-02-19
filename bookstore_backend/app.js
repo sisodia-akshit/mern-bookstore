@@ -15,6 +15,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const cloudinaryRoutes = require("./routes/cloudinary");
 const contactRoutes = require("./routes/contactRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const messagesRoutes = require("./routes/messagesRoutes");
 
 const errorHandler = require("./middleware/errorMiddleware");
 
@@ -77,6 +78,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/cloudinary", cloudinaryRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/messages", messagesRoutes);
 
 app.all("/{*any}", (req, res, next) => {
   res.status(404).json({

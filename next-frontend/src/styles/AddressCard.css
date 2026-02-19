@@ -1,0 +1,15 @@
+.addressCard {
+  padding:5px 10px;
+  border-radius: 10px;
+  color: #555;
+  font-size: .7rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+
+  & h3{
+    color: var(--primary-color);
+  }
+}
+.defaultAddressCard{
+  border: 2px solid var(--primary-color);
+}

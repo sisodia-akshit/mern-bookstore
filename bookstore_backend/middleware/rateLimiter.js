@@ -12,7 +12,7 @@ const apiLimiter = rateLimit({
 // Stricter limiter for auth routes (login, register, OTP, etc.)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 5 attempts per window
+    max: 50, // 5 attempts per window
     message: { success: false, message: "Too many attempts, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,
@@ -28,7 +28,7 @@ const otpLimiter = rateLimit({
 });
 const resetPasswordLimiter = rateLimit({
     windowMs: 15 * 24 * 60 * 60 * 1000, // 30d
-    max: 1, // 1 attempts per window
+    max: 8, // 1 attempts per window
     message: { success: false, message: "Too many attempts, please try again later." },
     standardHeaders: true,
     legacyHeaders: false,

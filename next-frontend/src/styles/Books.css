@@ -1,0 +1,41 @@
+.books {
+  /* min-height: 50vh; */
+  /* margin: 0px 200px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.books p {
+  padding-bottom: 20px;
+  font-size: 13px;
+  color: rgb(50, 50, 50);
+}
+
+.books h1 {
+  font-family: "Open Sans", sans-serif;
+  padding-bottom: 10px;
+}
+
+.books hr {
+  width: 10%;
+}
+.info-pro {
+  padding-top: 20px;
+  text-align: center;
+}
+
+.info-pro p {
+  padding-bottom: 10px;
+}
+.books .btns {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  & button {
+    border: none;
+    color: #fff;
+    font-weight: 500;
+  }
+}
+
